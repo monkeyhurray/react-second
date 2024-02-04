@@ -1,9 +1,18 @@
-import { React, useState } from "react";
+import { React, useState, useContext } from "react";
 import styled from "styled-components";
 
 import { useParams, useNavigate } from "react-router-dom";
 import wendy from "assets/images/wendy.png";
+import { FanLetterContext } from "context/FanLetterContext";
 
+const ToHomeBtn = styled.button`
+  width: 100px;
+  height: 60px;
+  margin: 90px auto 0px 100px;
+  font-size: 1.5em;
+  background-color: black;
+  color: white;
+`;
 const FanLetter = styled.div`
   background-color: grey;
   width: 900px;
@@ -70,10 +79,13 @@ const Confirmbtn = styled.button`
   background-color: black;
   color: white;
 `;
-function Detail({ entireComment, setEntireComment }) {
+function Detail() {
   const { id } = useParams();
+  const data = useContext(FanLetterContext);
+  const { entireComment, setEntireComment } = data;
   const navigate = useNavigate();
   const [edited, setEdited] = useState(false);
+  
   const selectedData = entireComment.find((e) => e.id === id);
   const [updateComment, setUpdateComment] = useState(selectedData.content);
 
@@ -102,6 +114,7 @@ function Detail({ entireComment, setEntireComment }) {
 
   return (
     <>
+      <ToHomeBtn onClick={() => navigate("/")}>{"홈으로"}</ToHomeBtn>
       <FanLetter>
         <div key={selectedData.id}>
           <UpperDiv>

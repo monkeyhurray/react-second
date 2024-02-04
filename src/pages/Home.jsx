@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import 레드벨벳 from "assets/images/레드벨벳.jpg";
 import wendy from "assets/images/wendy.png";
 import styled from "styled-components";
 import uuid from "react-uuid";
+import { FanLetterContext } from "context/FanLetterContext";
 
 const redVelvet = [
   { id: 1, value: "Wendy", name: "웬디" },
@@ -103,17 +104,19 @@ const CommentDiv = styled.div`
   display: "block";
 `;
 
-function Home({
-  entireComment,
-  setEntireComment,
-  nickName,
-  setNickName,
-  content,
-  setContent,
-}) {
+function Home() {
   const navigate = useNavigate();
-
+  const data = useContext(FanLetterContext);
   const [selectedMember, setSelectedMember] = useState("Wendy");
+  const [getLetterMember, setGetLetterMeber] = useState("Wendy");
+  const {
+    entireComment,
+    setEntireComment,
+    nickName,
+    setNickName,
+    content,
+    setContent,
+  } = data;
 
   //날짜추가
   let today = new Date();
@@ -133,16 +136,25 @@ function Home({
 
   const handleContent = (e) => {
     e.preventDefault();
-    setEntireComment([{ nickName, content, id: uuid() }, ...entireComment]);
+
+    setEntireComment([
+      { nickName, content, id: uuid(), value: getLetterMember },
+      ...entireComment,
+    ]);
     setNickName("");
     setContent("");
+  };
+
+  const handleSelectedMeber = (member) => {
+    setGetLetterMeber(member.target.value);
   };
 
   //페이지 이동 및 정보 전달
   const handleCommentClick = (id) => navigate(`/detail/${id}`);
 
   const filterdComments = entireComment.filter(
-    (comment) => comment.writedTo === selectedMember
+    (comment) =>
+      comment.writedTo === selectedMember || comment.value === selectedMember
   );
 
   return (
@@ -174,6 +186,7 @@ function Home({
               type="text"
               value={nickName}
               onChange={writeTitle}
+              maxLength="20"
               placeholder="최대 20글자까지 작성할 수 있습니다."
             />
           </NickNameDiv>
@@ -182,15 +195,16 @@ function Home({
             <ContentInput
               value={content}
               onChange={writeContent}
+              maxLength="100"
               placeholder="최대 100자 까지만 작성할 수 있습니다."
             />
           </ContentDiv>
           누구에게 보내실건가요?{" "}
-          <select name="member">
-            {redVelvet.map((e, i) => {
+          <select onChange={handleSelectedMeber} value={getLetterMember}>
+            {redVelvet.map((member) => {
               return (
-                <SelectMember key={e.id} value={e.value}>
-                  {e.name}
+                <SelectMember value={member.value} key={member.id}>
+                  {member.name}
                 </SelectMember>
               );
             })}
@@ -198,14 +212,14 @@ function Home({
           <UploadBtn onClick={handleContent}>팬레터 등록</UploadBtn>
         </MainBody>
 
-        {filterdComments.map((e, i) => {
+        {filterdComments.map((e) => {
           return (
             <CommentDiv key={e.id} onClick={() => handleCommentClick(e.id)}>
               <AvatarImg src={e.avatar ? e.avatar : wendy} />
               <CommentP>{e.nickName}</CommentP>
               <CommentP>{e.content}</CommentP>
               <CommentP>{dateString}</CommentP>
-              <CommentP>{e.writedTo ? e.writedTo : "Wendy"}</CommentP>
+              <CommentP>{e.writedTo ? e.writedTo : e.value}</CommentP>
             </CommentDiv>
           );
         })}
