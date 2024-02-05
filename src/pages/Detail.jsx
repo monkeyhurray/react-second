@@ -1,9 +1,90 @@
-import { React, useState, useContext } from "react";
+import { React, useState } from "react";
 import styled from "styled-components";
-
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import wendy from "assets/images/wendy.png";
-import { FanLetterContext } from "context/FanLetterContext";
+import { removeComment, editComment } from "../redux/modules/entireComment";
+
+function Detail() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [edited, setEdited] = useState(false);
+  const entireComment = useSelector((state) => {
+    return state.entireComment.data;
+  });
+
+  const { id } = useParams();
+
+  const selectedData = entireComment.find((e) => e.id === id);
+  const [updateComment, setUpdateComment] = useState(selectedData.content);
+
+  const removeHandler = (id) => {
+    dispatch(removeComment({ id }));
+    navigate("/");
+  };
+
+  const editButton = () => {
+    setEdited(true);
+  };
+
+  const updateBtn = () => {
+    const nextCommentList = entireComment.map((comment) => {
+      if (comment.id === id) {
+        return { ...comment, content: updateComment };
+      }
+
+      return comment;
+    });
+
+    dispatch(editComment(nextCommentList));
+    console.log(dispatch(editComment(nextCommentList)));
+    setEdited(false);
+  };
+
+  return (
+    <>
+      <ToHomeBtn onClick={() => navigate("/")}>{"홈으로"}</ToHomeBtn>
+      <FanLetter>
+        <div key={selectedData.id}>
+          <UpperDiv>
+            <AvatarImg
+              src={selectedData.avatar ? selectedData.avatar : wendy}
+            />
+            <SpanNameInfo> &nbsp;{selectedData.nickName}&nbsp;</SpanNameInfo>
+            <SpanTimeInfo>Date: {selectedData.createdAt}</SpanTimeInfo>
+          </UpperDiv>
+          <ToDiv>
+            To&nbsp;:&nbsp;
+            {selectedData.writedTo || "wendy"}
+          </ToDiv>
+
+          {edited ? (
+            <ContentTextArea
+              value={updateComment}
+              onChange={(e) => setUpdateComment(e.target.value)}
+            ></ContentTextArea>
+          ) : (
+            <ContentDiv>{updateComment}</ContentDiv>
+          )}
+
+          <Confirmdiv>
+            {edited ? (
+              <Confirmbtn onClick={updateBtn}>수정</Confirmbtn>
+            ) : (
+              <Confirmbtn onClick={editButton}>수정</Confirmbtn>
+            )}
+
+            <Confirmbtn onClick={() => removeHandler(selectedData.id)}>
+              삭제
+            </Confirmbtn>
+          </Confirmdiv>
+        </div>
+      </FanLetter>
+    </>
+  );
+}
+
+export default Detail;
 
 const ToHomeBtn = styled.button`
   width: 100px;
@@ -54,6 +135,8 @@ const ContentDiv = styled.div`
 const ContentTextArea = styled.textarea`
   margin: 20px 15px 0px 15px;
   padding: 10px;
+  width: 850px;
+  height: 200px;
   color: white;
   font-size: 2em;
   background-color: black;
@@ -79,80 +162,3 @@ const Confirmbtn = styled.button`
   background-color: black;
   color: white;
 `;
-function Detail() {
-  const { id } = useParams();
-  const data = useContext(FanLetterContext);
-  const { entireComment, setEntireComment } = data;
-  const navigate = useNavigate();
-  const [edited, setEdited] = useState(false);
-  
-  const selectedData = entireComment.find((e) => e.id === id);
-  const [updateComment, setUpdateComment] = useState(selectedData.content);
-
-  const removeHandler = (id) => {
-    const removeListArr = entireComment.filter((e) => e.id !== id);
-    setEntireComment(removeListArr);
-    navigate("/");
-  };
-
-  const editButton = () => {
-    setEdited(true);
-  };
-
-  const updateBtn = () => {
-    const nextCommentList = entireComment.map((comment) => {
-      if (comment.id === id) {
-        return { ...comment, content: updateComment };
-      }
-
-      return comment;
-    });
-
-    setEntireComment(nextCommentList);
-    setEdited(false);
-  };
-
-  return (
-    <>
-      <ToHomeBtn onClick={() => navigate("/")}>{"홈으로"}</ToHomeBtn>
-      <FanLetter>
-        <div key={selectedData.id}>
-          <UpperDiv>
-            <AvatarImg
-              src={selectedData.avatar ? selectedData.avatar : wendy}
-            />
-            <SpanNameInfo> &nbsp;{selectedData.nickName}&nbsp;</SpanNameInfo>
-            <SpanTimeInfo>Date: {selectedData.createdAt}</SpanTimeInfo>
-          </UpperDiv>
-          <ToDiv>
-            To&nbsp;:&nbsp;
-            {selectedData.writedTo || "wendy"}
-          </ToDiv>
-
-          {edited ? (
-            <ContentTextArea
-              value={updateComment}
-              onChange={(e) => setUpdateComment(e.target.value)}
-            ></ContentTextArea>
-          ) : (
-            <ContentDiv>{updateComment}</ContentDiv>
-          )}
-
-          <Confirmdiv>
-            {edited ? (
-              <Confirmbtn onClick={updateBtn}>수정</Confirmbtn>
-            ) : (
-              <Confirmbtn onClick={editButton}>수정</Confirmbtn>
-            )}
-
-            <Confirmbtn onClick={() => removeHandler(selectedData.id)}>
-              삭제
-            </Confirmbtn>
-          </Confirmdiv>
-        </div>
-      </FanLetter>
-    </>
-  );
-}
-
-export default Detail;
