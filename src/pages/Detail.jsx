@@ -15,7 +15,7 @@ function Detail() {
 
   const { id } = useParams();
 
-  const selectedData = entireComment.find((e) => e.id === id);
+  const selectedData = entireComment.find((item) => item.id === id);
   const [updateComment, setUpdateComment] = useState(selectedData.content);
 
   const removeHandler = (id) => {
@@ -69,7 +69,7 @@ function Detail() {
 
           <Confirmdiv>
             {edited ? (
-              <Confirmbtn onClick={updateBtn}>수정</Confirmbtn>
+              <Confirmbtn onClick={updateBtn}>수정 완료</Confirmbtn>
             ) : (
               <Confirmbtn onClick={editButton}>수정</Confirmbtn>
             )}
@@ -150,13 +150,13 @@ const ToDiv = styled.div`
 `;
 const Confirmdiv = styled.div`
   float: right;
-  width: 250px;
+  width: 300px;
 `;
 const Confirmbtn = styled.button`
-  width: 100px;
+  width: 120px;
   height: 60px;
   margin-top: 20px;
-  margin-right: 20px;
+  margin-right: 30px;
   float: right;
   font-size: 1.5em;
   background-color: black;

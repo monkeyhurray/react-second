@@ -93,7 +93,7 @@ function Home() {
       </BackGroundImg>
 
       <Main>
-        <FormBody>
+        <FormBody onSubmit={handleContent}>
           <NickNameDiv>
             닉네임:{" "}
             <NickNameInput
@@ -123,7 +123,7 @@ function Home() {
               );
             })}
           </select>
-          <UploadBtn onClick={handleContent}>팬레터 등록</UploadBtn>
+          <FormUploadInput type="submit" value={"팬레터 등록"} />
         </FormBody>
 
         {filterdComments.map((item) => {
@@ -189,7 +189,9 @@ const NickNameInput = styled.input`
   margin-bottom: 10px;
   width: 500px;
 `;
-const ContentDiv = styled.div``;
+const ContentDiv = styled.div`
+  align-items: center;
+`;
 
 const SelectMember = styled.option``;
 
@@ -199,7 +201,8 @@ const ContentArea = styled.textarea`
   height: 140px;
 `;
 
-const UploadBtn = styled.button`
+const FormUploadInput = styled.input`
+  margin-left: 10px;
   text-align: right;
 `;
 
