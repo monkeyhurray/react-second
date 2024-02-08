@@ -29,12 +29,15 @@ function Home() {
 
   //날짜추가
   let today = new Date();
-  let year = today.getFullYear();
-  let month = ("0" + (today.getMonth() + 1)).slice(-2);
-  let day = ("0" + today.getDate()).slice(-2);
-  let dateString = year + "-" + month + "-" + day;
-  //모달을 위한 버튼
+  const getDateString = (today) => {
+    let year = today.getFullYear();
+    let month = ("0" + (today.getMonth() + 1)).slice(-2);
+    let day = ("0" + today.getDate()).slice(-2);
+    let dateString = `${year}${month}${day}`;
+    return dateString;
+  };
 
+  //모달을 위한 버튼
   const handleButtonClick = (memberValue) => {
     setSelectedMember(memberValue);
   };
@@ -90,7 +93,7 @@ function Home() {
       </BackGroundImg>
 
       <Main>
-        <MainBody>
+        <FormBody>
           <NickNameDiv>
             닉네임:{" "}
             <NickNameInput
@@ -121,16 +124,19 @@ function Home() {
             })}
           </select>
           <UploadBtn onClick={handleContent}>팬레터 등록</UploadBtn>
-        </MainBody>
+        </FormBody>
 
-        {filterdComments.map((e) => {
+        {filterdComments.map((item) => {
           return (
-            <CommentDiv key={e.id} onClick={() => handleCommentClick(e.id)}>
-              <AvatarImg src={e.avatar ? e.avatar : wendy} />
-              <CommentP>{e.nickName}</CommentP>
-              <CommentP>{e.content}</CommentP>
-              <CommentP>{dateString}</CommentP>
-              <CommentP>{e.writedTo ? e.writedTo : e.value}</CommentP>
+            <CommentDiv
+              key={item.id}
+              onClick={() => handleCommentClick(item.id)}
+            >
+              <AvatarImg src={item.avatar ? item.avatar : wendy} />
+              <CommentP>{item.nickName}</CommentP>
+              <CommentP>{item.content}</CommentP>
+              <CommentP>{getDateString(today)}</CommentP>
+              <CommentP>{item.writedTo ? item.writedTo : item.value}</CommentP>
             </CommentDiv>
           );
         })}
@@ -170,7 +176,7 @@ const Main = styled.div`
   margin: 0 auto;
 `;
 
-const MainBody = styled.form`
+const FormBody = styled.form`
   background-color: gray;
   width: 700px;
   height: 200px;
